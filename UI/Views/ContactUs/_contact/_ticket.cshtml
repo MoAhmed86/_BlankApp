@@ -1,0 +1,323 @@
+﻿@model Core.DTOs.ServiceNow.TicketVM
+@using Core.Resources
+@using static Core.Enums
+@inject Microsoft.AspNetCore.Identity.UserManager<Core.DTOs.Identity.ApplicationUser> UserManager
+
+<div class="alert alert-danger" role="alert" style="display:none">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+    <div id="ticket_errors"></div>
+</div>
+<div class="alert alert-success" role="alert" style="display:none">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+    <div id="ticket_success">
+
+    </div>
+</div>
+
+<form id="frm">
+    <div id="div_ticket">
+        <div class="col-12 p-0">
+            <div class="form-group col-md-6">
+                <label class="control-label" for="inputBasicFirstName">@Resource.ServiceName</label>
+                <select id="Source" name="Source" class="form-control">
+                    <option value="RawaafedAdmin">@Resource.AppName</option>
+                </select>
+            </div>
+        </div>
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <div class="col-12 row m-0 p-0">
+                <div class="form-group col-md-6">
+                    <label class="control-label" for="">@Resource.FullName</label>
+                    @Html.TextBoxFor(model => model.FullName, new { placeholder = Resource.FullName, @class = "form-control" })
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label" for="">@Resource.IdentityNumber</label>
+                    @Html.TextBoxFor(model => model.IdentityNumber, new { placeholder = Resource.IdentityNumber, @class = "form-control", maxlength = 10 })
+                </div>
+            </div>
+            <div class="col-12 row m-0 p-0">
+                <div class="form-group col-md-6">
+                    <label class="control-label" for="">@Resource.MobileNumber</label>
+                    @Html.TextBoxFor(model => model.MobileNumber, new { placeholder = "9665xxxxxxxx", @class = "form-control", maxlength = 12 })
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label" for="">@Resource.Email</label>
+                    @Html.TextBoxFor(model => model.EMail, new { placeholder = Resource.Email, @class = "form-control" })
+                </div>
+            </div>
+        }
+        <div class="col-12 row m-0 p-0">
+            <div class="form-group col-md-6">
+                <label class="control-label" for="">@Resource.TicketCategory</label>
+                @Html.DropDownListFor(model => model.CategoryId, new List<SelectListItem>(), new { @class = "form-control" })
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label" for="">@Resource.TicketSubCategory</label>
+                @Html.DropDownListFor(model => model.SubCategoryId, new List<SelectListItem>(), new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-12 p-0">
+            <div class="form-group col-md-12">
+                <label class="control-label" for="">@Resource.Address</label>
+                @Html.TextBoxFor(model => model.ShortDescription, new { placeholder = @Resource.Address, @class = "form-control", maxlength = 70 })
+                @*<input type="text" class="form-control" id="inputtitle" name="inputtitle" placeholder="العنوان" autocomplete="off">*@
+            </div>
+        </div>
+        <div class="col-12 p-0">
+            <div class="form-group col-md-12">
+                <label class="control-label" for="">@Resource.Desc</label>
+                @Html.TextAreaFor(model => model.Description, new { placeholder = @Resource.Desc, style = "height:200px", @class = "form-control" })
+                @*<textarea type="text" class="form-control" id="inputdes" name="inputdes" placeholder="الوصف" autocomplete="off"></textarea>*@
+            </div>
+        </div>
+        <div class="col-12 p-0">
+            <div class="form-group col-md-12">
+                <input type="file" class="form-control" accept=".jpg,.jpeg,.gif,.png" name="photoFile" id="photoFile" />
+                @*<img id="userImageEdit" src="~/Content/img/male.jpeg" width="50" height="50" />*@
+            </div>
+        </div>
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <div class="col-12 p-0" id="recaptcha_Div">
+                <div class="form-group col-md-12">
+                    <div class="g-recaptcha" data-sitekey="@ViewData["ReCaptchaKey"]"></div>
+                    @*@Html.Recaptcha(theme: Recaptcha.Web.RecaptchaTheme.Clean, language: "ar")
+                        @Html.ValidationMessage("ReCaptcha")*@
+                </div>
+            </div>
+        }
+
+        <div class="col-12 p-0">
+            <div class="col-12 text-center">
+                <button type="button" id="btn_CreateTicket" class="tetco-btn my-3 px-5">@Resource.Send</button>
+            </div>
+        </div>
+    </div>
+</form>
+<input type="hidden" id="ImageStatus" />
+<script type="text/javascript">
+        $(function () {
+            $('input[type=file]').change(function () {
+
+            var fileInput = $('#photoFile');
+                var myform = $("#frm");
+            var formData = new FormData(myform[0]);
+
+            if (fileInput[0].files[0] != null) {
+                formData.append(fileInput[0].files[0].name, fileInput[0].files[0]);
+                }
+
+            showLoader();
+            $.ajax({
+                crossDomain: true,
+                type: "POST",
+                url: '@Url.Action("SetImageOnChange", "ContactUs")',
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $("#ImageStatus").val(data);
+                    $('#userImageEdit').attr('src', data);
+                    hideLoader();
+                }
+            });
+
+        });
+    });
+    $(document).ready(function () {
+        loadCategories();
+        $('#@Html.IdFor(model=>model.CategoryId)').change(function () {
+            loadSubCategories($('#@Html.IdFor(model => model.CategoryId)').val());
+        });
+        $('#btn_CreateTicket').click(function () {
+            CreateTicket();
+        })
+    })
+    function loadCategories() {
+
+        showLoader();
+        $.ajax({
+            type:'GET',
+            url: '@Url.Action("GetCategories", "ContactUs")',
+            data: { source:'@Model.Source' },
+            dataType: 'json',
+            success: function (response) {
+
+                $('#@Html.IdFor(model=>model.CategoryId)').html('');
+                $('#@Html.IdFor(model=>model.CategoryId)').html('<option>@Resource.Select</option>').val(null);
+                $.each(response, function (index, item) {
+                    $('#@Html.IdFor(model=>model.CategoryId)').append($('<option></option>').text(item.label).val(item.value));
+                });
+                hideLoader();
+            },
+            error: function (err) {
+                hideLoader();
+            }
+
+        })
+    }
+    function loadSubCategories(categoryId) {
+        showLoader();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetSubCategories", "ContactUs")',
+            data: { categoryId: categoryId },
+            dataType: 'json',
+            success: function (response) {
+                $('#@Html.IdFor(model=>model.SubCategoryId)').html('');
+                $('#@Html.IdFor(model=>model.SubCategoryId)').html('<option>@Resource.Select</option>').val(null);
+                $.each(response, function (index, item) {
+                    $('#@Html.IdFor(model=>model.SubCategoryId)').append($('<option></option>').text(item.label).val(item.value));
+                });
+                hideLoader();
+            },
+            error: function (err) {
+                hideLoader();
+            }
+        })
+    }
+
+    function CreateTicket() {
+        RemoveBorders();
+
+        var formData = new FormData();
+        formData.append('Description', $('#Description').val());
+        formData.append('CategoryId', $('#CategoryId').val());
+        formData.append('SubCategoryId', $('#SubCategoryId').val());
+        formData.append('Source', $('#Source').val());
+        formData.append('ShortDescription', $('#ShortDescription').val());
+        formData.append('IsLoggedIn','@Model.IsLoggedIn')
+
+        if('@Model.IsLoggedIn' == 'False')
+        {
+            formData.append('FullName', $('#FullName').val());
+            formData.append('IdentityNumber', $('#IdentityNumber').val());
+            formData.append('MobileNumber', $('#MobileNumber').val());
+            formData.append('EMail', $('#EMail').val());
+            formData.append('g-recaptcha-response', $('#g-recaptcha-response').val());
+        }
+
+        var fileInput = $('#photoFile');
+        if (fileInput[0].files[0] != null) {
+            formData.append(fileInput[0].files[0].name, fileInput[0].files[0]);
+        }
+        var imageStatus = $("#ImageStatus").val();
+        if (imageStatus == "Size Exceeds 4 MB") {
+            showErrors('@Html.Raw(Resource.FailedToSave_ImageSize_Max_4_MB)');
+            return;
+        }
+        else if (imageStatus == "Invalid Extension") {
+            showErrors('@Resource.FailedToSave_InvalidPic');
+            return;
+        }
+
+        showLoader();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("CreateTicket","ContactUs")',
+            data: formData,
+            cache: false,
+            crossDomain: true,
+            processData: false,
+            dataType: 'json',
+            contentType: false,
+            success: function (response) {
+
+                hideLoader();
+                $(window).scrollTop(0);
+                   if (response.statusCode == '@((int)StatusCode.InvalidModel)') {
+                    if (response.validationErrors != '') {
+                        var html = '';
+                        for (var i = 0; i < response.validationErrors.length; i++) {
+                            {
+                                html += '<i class="fa fa-exclamation-triangle"></i> ' + response.validationErrors[i].errorMessage + '<br/>';
+
+                                if (response.validationErrors[i].propertyName == 'g-recaptcha-response') {
+                                    $('#recaptcha_Div').css({ "border": "red 1px solid" });
+                                }
+
+                                else
+                                    $('#' + response.validationErrors[i].propertyName).css({ "border": "red 1px solid" });
+                            }
+                        }
+                        $(document).scrollTop(0);
+                        //showErrors(html);
+                        $('#ticket_errors').html(html);
+                        $('#ticket_errors').parent().slideDown();
+                        //showNotificationAlert();
+                    }
+                }
+                else if (response.statusCode == '@((int)StatusCode.OK)') {
+                        EmptyTicketForm();
+                       //showSuccess(response.message);
+                       $('#ticket_errors').html('');
+                       $('#ticket_errors').parent().slideUp();
+                       $('#ticket_success').html(response.message);
+                       $('#ticket_success').parent().slideDown();
+                       GetTicketsOrdered();
+                }
+                else if (response.statusCode == '@((int)StatusCode.SaveFailed)') {
+                    //showErrors(response.message);
+                       $('#ticket_errors').html(response.message);
+                       $('#ticket_errors').parent().slideDown();
+                }
+            },
+            error: function (err) {
+                //showErrors('@*@Resource.CreateTicketFailure*@');
+                $('#ticket_errors').html('@Html.Raw(Resource.CreateTicketFailure)');
+                $('#ticket_errors').parent().slideDown();
+                hideLoader();
+            }
+        });
+    }
+    function RemoveBorders() {
+        $('#recaptcha_Div').css({"border":""});
+        $('#div_ticket input,select,textarea').each(function () {
+            $(this).css({ "border": "" });
+        })
+    }
+    function EmptyTicketForm() {
+
+        if ($('#g-recaptcha-response').length)
+            grecaptcha.reset();
+        $('#div_ticket input,select,textarea').each(function () {
+            $(this).val('');
+        })
+        //$('#userImageEdit').attr('src', '/Content/img/male.jpeg');
+    }
+
+</script>
+
+<script type="text/javascript">
+    (function ($) {
+        $.fn.inputFilter = function (inputFilter) {
+            return this.on("input keydown keyup mousedown mouseup select contextmenu drop", function () {
+                if (inputFilter(this.value)) {
+                    this.oldValue = this.value;
+                    this.oldSelectionStart = this.selectionStart;
+                    this.oldSelectionEnd = this.selectionEnd;
+                } else if (this.hasOwnProperty("oldValue")) {
+                    this.value = this.oldValue;
+                    this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                }
+            });
+        };
+    }(jQuery));
+
+    $(document).ready(function () {
+        $("#MobileNumber").inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        });
+    });
+    $(document).ready(function () {
+        $("#IdentityNumber").inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        });
+    });
+</script>

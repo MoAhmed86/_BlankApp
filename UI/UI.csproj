@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>aspnet-UI-F7A256C9-71DA-4534-BAEE-B8762E0A16A1</UserSecretsId>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <Version>1.0.0.86</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\Api\**" />
+    <Compile Remove="Views\Center\**" />
+    <Compile Remove="Views\Lookup\**" />
+    <Compile Remove="wwwroot\Files\**" />
+    <Content Remove="Controllers\Api\**" />
+    <Content Remove="Views\Center\**" />
+    <Content Remove="Views\Lookup\**" />
+    <Content Remove="wwwroot\Files\**" />
+    <EmbeddedResource Remove="Controllers\Api\**" />
+    <EmbeddedResource Remove="Views\Center\**" />
+    <EmbeddedResource Remove="Views\Lookup\**" />
+    <EmbeddedResource Remove="wwwroot\Files\**" />
+    <None Remove="Controllers\Api\**" />
+    <None Remove="Views\Center\**" />
+    <None Remove="Views\Lookup\**" />
+    <None Remove="wwwroot\Files\**" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\CenterController.cs" />
+    <Compile Remove="Controllers\LookupController.cs" />
+  </ItemGroup>
+
+  <!--<Target Name="CreateFilesFolderOnFileSystem" AfterTargets="FileSystemPublish">
+    <MakeDir Directories="$(PublishUrl)Files" Condition="!Exists('$(PublishUrl)Files')" />
+  </Target>
+  <Target Name="CreateFieldsFolderOnFileSystem" AfterTargets="FileSystemPublish">
+    <MakeDir Directories="$(PublishUrl)Files\Fields" Condition="!Exists('$(PublishUrl)Files\Fields')" />
+  </Target>
+  <Target Name="CreateLogsFolderOnFileSystem" AfterTargets="FileSystemPublish">
+    <MakeDir Directories="$(PublishUrl)Logs" Condition="!Exists('$(PublishUrl)Logs')" />
+  </Target>-->
+
+  <ItemGroup>
+    <Content Remove="appsettings.Production.json" />
+    <Content Remove="appsettings.Staging.json" />
+    <Content Remove="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Remove="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Remove="Views\Account\RoleDetails.cshtml" />
+    <Content Remove="Views\Account\Roles.cshtml" />
+    <Content Remove="Views\Account\_Roles.cshtml" />
+    <Content Remove="Views\ContactUs\AdminReview.cshtml" />
+    <Content Remove="Views\ContactUs\_Reviews.cshtml" />
+    <Content Remove="Views\ContactUs\_SubjectPopup.cshtml" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.7" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\DB\DB.csproj" />
+    <ProjectReference Include="..\Service\Service.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Views\Shared\EditorTemplates\" />
+    <Folder Include="Views\Shared\DisplayTemplates\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="Views\Shared\Layouts\_DecoratedLayout.cshtml" />
+    <None Include="Views\Shared\Layouts\_Layout.cshtml" />
+    <None Include="Views\Shared\Layouts\_Root.cshtml" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\brands.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\fa-brands.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\fa-light.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\fa-regular.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\fa-solid.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\fontawesome.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\light.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\regular.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\solid.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\v4-shims.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_animated.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_bordered-pulled.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_core.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_fixed-width.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_icons.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_larger.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_list.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_mixins.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_rotated-flipped.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_screen-reader.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_shims.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_stacked.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\scss\_variables.scss" />
+    <None Include="wwwroot\fonts\Font_Awesome\webfonts\fa-brands-400.svg" />
+    <None Include="wwwroot\fonts\Font_Awesome\webfonts\fa-brands-400.woff2" />
+    <None Include="wwwroot\fonts\Font_Awesome\webfonts\fa-light-300.svg" />
+    <None Include="wwwroot\fonts\Font_Awesome\webfonts\fa-light-300.woff2" />
+    <None Include="wwwroot\fonts\Font_Awesome\webfonts\fa-regular-400.svg" />
+    <None Include="wwwroot\fonts\Font_Awesome\webfonts\fa-regular-400.woff2" />
+    <None Include="wwwroot\fonts\Font_Awesome\webfonts\fa-solid-900.svg" />
+    <None Include="wwwroot\fonts\Zarid\29LTZaridSlab-Bold.woff2" />
+    <None Include="wwwroot\fonts\Zarid\29LTZaridSlab-Medium.woff2" />
+    <None Include="wwwroot\fonts\Zarid\29LTZaridSlab-SemiBold.woff2" />
+    <None Include="wwwroot\images\home\awards.svg" />
+    <None Include="wwwroot\images\home\fields.svg" />
+    <None Include="wwwroot\images\master\logo.svg" />
+    <None Include="wwwroot\images\master\tetco.svg" />
+    <None Include="wwwroot\js\Bootbox\bootbox.js" />
+    <None Include="wwwroot\js\Bootbox\bootbox.min.js" />
+    <None Include="wwwroot\js\Bootbox\bootbox.min.js.map" />
+    <None Include="wwwroot\js\Bootstrap\bootstrap.bundle.js" />
+    <None Include="wwwroot\js\Bootstrap\bootstrap.bundle.min.js" />
+    <None Include="wwwroot\js\Bootstrap\bootstrap.js" />
+    <None Include="wwwroot\js\Bootstrap\bootstrap.min.js" />
+    <None Include="wwwroot\js\Bootstrap\popper.min.js" />
+    <None Include="wwwroot\js\jquery-3.3.1.min.js" />
+    <None Include="wwwroot\js\jquery-3.4.1.min.js" />
+    <None Include="wwwroot\js\jquery-ui.js" />
+    <None Include="wwwroot\js\site.js" />
+    <None Include="wwwroot\js\UI\jquery.app.js" />
+    <None Include="wwwroot\js\UI\UI.js" />
+    <Content Update="appsettings.json" CopyToPublishDirectory="Never" />
+    <Content Update="appsettings.*.json" CopyToPublishDirectory="Never" />
+    <Content Update="web.config" CopyToPublishDirectory="Never" />
+  
+</ItemGroup>
+
+</Project>

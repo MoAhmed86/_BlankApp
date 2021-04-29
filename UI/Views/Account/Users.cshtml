@@ -1,0 +1,95 @@
+﻿@model Core.DTOs.Search.UserSearchModel
+@using Core.Resources
+
+@{ ViewData["Title"] = Resource.Users;
+    Layout = "~/Views/Shared/Layouts/_header.cshtml";
+
+    bool CreateUser = User.Claims.Any(a => a.Type == "CreateUser");
+}
+
+<div class="card  card-table">
+    <h5 class="form-title p-y-10" style=" color:#02A29C;font-weight:normal;">@ViewData["Title"]</h5>
+    @if (CreateUser)
+    {
+        <div class="col-12 post-but">
+            <a class="nav-link tetco-btn btn-link my-0" asp-action="Create" asp-controller="Account">@Resource.Add @Resource.User</a>
+        </div>
+    }
+</div>
+
+<div class="container home-container m-y-40" style="max-width:1012px;margin:auto;">
+    <div class="w-full row m-0 p-14 form home-table">
+
+        @await Html.PartialAsync("_Notification")
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group col-12 col-lg-6">
+            <label class="control-label">@Resource.FullName</label>
+            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", placeHolder = Resource.FullName })
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+        <div class="form-group col-12 col-lg-6">
+            <label class="control-label">@Resource.Email</label>
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeHolder = Resource.Email })
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group col-12 col-lg-6">
+            <label class="control-label">@Resource.RoleName</label>
+            @Html.DropDownListFor(m => m.RoleName, new SelectList(ViewBag.Roles, "Name", "Name"), @Resource.Select, new { @class = "form-control", style = "padding-top:3px" })
+            <span asp-validation-for="RoleName" class="text-danger"></span>
+        </div>
+        <div class="form-group col-12 col-lg-6">
+            <label class="control-label">@Resource.Status @Resource.The@Resource.User</label>
+            @Html.DropDownListFor(m => m.IsDeleted, new SelectList(ViewBag.Status, "Id", "DescAr"), @Resource.Select, new { @class = "form-control", style = "padding-top:3px" })
+            <span asp-validation-for="IsDeleted" class="text-danger"></span>
+        </div>
+        <div class="col-12 text-end pt-3">
+            <button id="btnSearch" type="button" class="tetco-btn outline">@Resource.Search</button>
+        </div>
+
+        <div id="divList" class="w-full row m-0" style="padding:30px;">
+
+        </div>
+    </div>
+</div>
+
+@section styles{
+    <link href="~/css/Theme/Templates/home.css" rel="stylesheet" />
+}
+
+<script type="text/javascript">
+
+    $(function () {
+        loadTableData(0);
+    });
+
+    $('#btnSearch').click(function () {
+        loadTableData();
+    });
+
+    function loadTableData(pageIndex) {
+        const fullName = $('#@Html.IdFor(model=> model.FullName)').val();
+        const email = $('#@Html.IdFor(model=> model.Email)').val();
+        const roleName = $('#@Html.IdFor(model=> model.RoleName)').val();
+        const isDeleted = $('#@Html.IdFor(model=> model.IsDeleted)').val() == '' ? '' : $('#@Html.IdFor(model=> model.IsDeleted)').val() == '1' ? true : false;
+
+        showLoader();
+        $.ajax({
+            url: "@Url.Action("UsersPartial", "Account")",
+            data: { fullName: fullName, Email: email, RoleName: roleName, IsDeleted: isDeleted, PageIndex: pageIndex},
+            type: "GET",
+
+            success: function (res) {
+
+                if (res != '') {
+                    $('#divList').html(res);
+                }
+                hideLoader();
+            },
+            error: function (error) {
+
+                hideLoader();
+            }
+        });
+    }
+
+</script>

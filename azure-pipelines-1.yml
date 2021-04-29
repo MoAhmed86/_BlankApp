@@ -1,0 +1,71 @@
+trigger:
+- Dev
+
+pool:
+  name: windows-2019
+  demands: java
+
+variables:
+  solution: '**/*.sln'
+  buildConfiguration: 'Release'
+  buildProjects: '**/*.csproj'
+  testProjects: '**/*[Tt]ests/*.csproj'  
+
+steps:
+- task: GitVersion@5
+  displayName: GitVersion
+  inputs:
+    preferBundledVersion: false
+    configFilePath: 'GitVersion.yml'
+    updateAssemblyInfo: true
+
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: '$(buildProjects)'
+    feedsToUse: 'config'
+    nugetConfigPath: 'NuGet.config'
+    externalFeedCredentials: 'Nuget-Feed'
+
+- task: SonarQubePrepare@4
+  displayName: 'Prepare analysis on SonarQube'
+  inputs:
+    SonarQube: 'SonarQube-Thraa'
+    projectKey: 'Thraa-Product'
+    projectName: 'Thraa-Product'
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    projects: '$(buildProjects)'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: '$(testProjects)'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+  enabled: false
+  
+- task: SonarQubeAnalyze@4
+  displayName: 'Run Code Analysis'
+
+- task: SonarQubePublish@4
+  displayName: 'Publish Quality Gate Result'
+  
+- task: DotNetCoreCLI@2
+  displayName: Publish
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
+    zipAfterPublish: True
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()

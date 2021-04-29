@@ -1,0 +1,12 @@
+# Don't track content of these folders
+.vs/
+UI/Logs
+API/Logs
+UI/Files
+UI/wwwroot/Files
+UI/wwwroot/Files/Fields
+obj
+bin
+node_modules
+*.map
+

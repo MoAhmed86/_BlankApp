@@ -1,0 +1,102 @@
+﻿@using Core.Resources
+@model Core.DTOs.PagedListModel<Core.DTOs.VM.ContactUsVM>
+@using Core.Enums
+
+<div class="br-section-wrapper">
+    <div class="br-pagetitle">
+
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width:30%">
+                        <label for="EmailAddress" class="form-control-label tx-green-1">@Resource.EmailAddress</label>
+                    </th>
+                    <th style="width:60%">
+
+                        <label for="EmailAddress" class="form-control-label tx-green-1">@Resource.Subject</label>
+                    </th>
+                    <th style="width:10%">
+                        @Resource.show
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListObj.Count == 0)
+                {
+                    <tr>
+                        <td colspan="3" style="text-align:center">
+                            <b>@Resource.NoDataFound</b>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.ListObj)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Subject)
+                            </td>
+
+                            <td>
+                                <i onclick="ViewSubject(@item.Id)" class="fa fa-eye-slash fa-2x" style="color: #5BC0DE; cursor: pointer; " title="" data-toggle='modal'></i>
+
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="13">
+                        <div style="text-align:center">
+                            <b>@Resource.ResultsCount : @(Model.PagingModel.ItemsCount)</b>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="10" align="center">
+                        @Html.DisplayFor(model => model.PagingModel, "_Pagination")
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>
+
+
+
+<div id="ViewPopUpDiv">
+
+</div>
+<script type="text/javascript">
+    function ViewSubject(id) {
+        showLoader();
+
+        $.ajax({
+            cache: false,
+            crossDomain: true,
+            url: '@Url.Action("GetDetails", "ContactUs")',
+            data: { id: id },
+            type: "GET",
+
+            success: function (result1) {
+                //alert("Edit Model");
+                $("#ViewPopUpDiv").html(result1);
+
+                $('#modal-dialogbills-RepositorySection').modal({ show: true });
+                hideLoader();
+            },
+            error: function (error) {
+                hideLoader();
+            }
+        });
+
+    }
+</script>
+

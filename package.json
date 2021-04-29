@@ -1,0 +1,22 @@
+{
+  "name": "UIStandardMVC",
+  "version": "1.0.0",
+  "config": {
+    "path": ""
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-external-helpers": "^7.2.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
+    "@babel/plugin-transform-modules-umd": "^7.2.0",
+    "@babel/preset-env": "^7.4.3",
+    "babel-core": "6.26.3",
+    "front-end-assistant": "^1.1.5",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-sourcemaps": "^2.6.5"
+  },
+  "scripts": {},
+  "dependencies": {}
+}

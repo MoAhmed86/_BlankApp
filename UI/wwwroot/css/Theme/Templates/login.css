@@ -1,0 +1,45 @@
+/*$input-color: $gray-700 !default;*/
+/*$input-border-width: $input-btn-border-width !default;*/
+body {
+  background: #F3F5F9; }
+
+.container-root.container {
+  max-width: 100%;
+  padding: 0;
+  min-height: 100vh; }
+
+.main-content, .inner-container, .container-root, .login-register {
+  min-height: 100vh;
+  padding: 0 !important; }
+
+.breadcrumb-container, .tetco-footer, .site-header {
+  display: none; }
+
+.login-register {
+  height: 100%; }
+  .login-register .intro {
+    background: -webkit-gradient(linear, right top, left bottom, from(#183A49), to(#4D1A7F));
+    background: linear-gradient(to left bottom, #183A49, #4D1A7F); }
+    .login-register .intro img {
+      width: 180px;
+      padding: 15px; }
+      @media only screen and (max-width: 992px) {
+        .login-register .intro img {
+          width: 100px; } }
+  .login-register p {
+    color: #4A4A4A; }
+  .login-register #registration h5 {
+    color: #0A5A70; }
+    .login-register #registration h5 a i {
+      font-size: 25px; }
+  .login-register #myTabContent {
+    min-height: 450px; }
+  .login-register .complate i {
+    display: block;
+    font-size: 120px;
+    color: #007AFF; }
+  .login-register a {
+    color: #908A81; }
+/*auto gnerated by npm front-end-assistant debugNo=73487*/
+	
+/*# sourceMappingURL=login.css.map */

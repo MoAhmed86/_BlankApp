@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "~/Views/Shared/Layouts/_DecoratedLayout.cshtml";
+    //ViewBag.ApplyLogoLink = true;
+}
+@section styles{
+    @RenderSection("styles", required: false)
+}
+
+<div class="clearfix"></div>
+
+@*-----------  Content -----------*@
+@RenderBody()
+
+<div class="clearfix"></div>
+
+@section scripts{
+    @RenderSection("scripts", required: false)
+
+}

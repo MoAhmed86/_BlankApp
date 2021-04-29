@@ -1,0 +1,142 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Core.DTOs.Identity;
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="@ViewData["Title"]" />
+    <meta name="keywords" content="@ViewData["Title"]" />
+
+    <link rel="shortcut icon" href="@Url.Content("~/Images/Master/logo.ico")" type="image/x-icon" />
+
+    <title>@ViewData["Title"]</title>
+
+    <link href="~/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/bootstrap-extend.css" rel="stylesheet" />
+    <link href="~/css/theme.css" rel="stylesheet" />
+    <link href="~/css/loader.css" rel="stylesheet" />
+    <script src="~/js/jquery-3.4.1.min.js"></script>
+    <script src="~/js/jquery-ui.js"></script>
+    @RenderSection("styles", required: false)
+    @*Calendar Script*@
+    @*<script src="~/UmmAlQuraCalendar/hijri-date.js"></script>
+        <script src="~/UmmAlQuraCalendar/calendar.js"></script>
+        <script src="~/UmmAlQuraCalendar/jquery.calendars.js"></script>
+        <script src="~/UmmAlQuraCalendar/jquery.calendars.ummalqura.js"></script>*@
+</head>
+<body class="rtl" dir="rtl">
+    <div id="overlay">
+        <div class="cv-spinner">
+            <span class="spinner"></span>
+        </div>
+    </div>
+
+    <div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalTitle">Modal Title</h3>
+                    <button type="button" class="close ml-0" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="col-12 p-0" style="padding: 0px 20px !important;">
+                    <div id="modalBody" class="alert alert-success w-full" role="alert" style="margin-top: 0px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @RenderBody()
+    <script src="~/js/Bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/js/UI/UI.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+<script type="text/javascript">
+
+    function showErrors(id, html) {
+        $('#' + id).html(html);
+        $('#' + id).parent().slideUp();
+        $('#' + id).parent().slideDown();
+    }
+    function hideErrors(id) {
+        $('#' + id).html();
+        $('#' + id).parent().slideUp();
+    }
+
+    function showLoader() {
+        $("#overlay").fadeIn(300);
+    }
+
+    function hideLoader() {
+        $("#overlay").fadeOut(300);
+    }
+
+    function showNotification(html, title, alertType = '') {
+        showModal(html, title, 'modal-xl', 'Remove', alertType)
+    }
+
+    function showModal(html, title, modalClass, classMode, alertType = '') {
+        $('#modalTitle').text(title);
+        $('#modalBody').html(html);
+
+
+        $('#modalBody').removeClass('alert-success');
+        $('#modalBody').removeClass('alert-danger');
+        $('#modalBody').removeClass('alert-warning');
+
+        if (alertType != '') {
+            $('#modalBody').addClass(alertType);
+        }
+
+        if (classMode == 'Add')
+            $('#modal div:first-child.modal-dialog').addClass(modalClass);
+        else
+            $('#modal div:first-child.modal-dialog').removeClass(modalClass);
+
+        $('#modal').modal('show');
+    }
+
+    function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    function displayErrors(errors) {
+        if (errors != '') {
+            var html = '';
+            for (var i = 0; i < errors.length; i++) {
+                {
+                    html += '<i class="fa fa-exclamation-triangle pr-2"></i> ' + errors[i].errorMessage + '<br/>';
+
+                    try {
+                        $('#' + errors[i].propertyName).css({ "border": "red 1px solid" });
+                    } catch (e) {
+                        //do nothing
+                    }
+                }
+            }
+
+            showErrors('divMessages', html);
+        }
+    }
+
+</script>

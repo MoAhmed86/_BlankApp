@@ -1,0 +1,206 @@
+﻿@model DateTime?
+@using Core;
+@using Core.Resources
+
+@{
+    var modelId = Guid.NewGuid();
+    var val = Model.HasValue && Model.GetValueOrDefault() > DateTime.MinValue ? Model.GetValueOrDefault().ToString("dd-MM-yyyy") : string.Empty;
+
+    string hijriDate = string.Empty;
+    if (Model.HasValue)
+    {
+        hijriDate = CommonStaticFunctions.ConvertGregToUmAlQura(Model);
+    }
+}
+
+
+<div id="div_@modelId" class="input-group mb-3">
+    <div class="input-group-append">
+        <i class="fa fa-calendar"></i>
+        @Html.HiddenFor(model => model)
+        <div id="divHijri_@modelId" class="px-2 py-2">
+            <input type="text" id="txt_@modelId" name="txt_@modelId" value="@hijriDate" class="form-control calText inputReq" placeholder="@Resource.HijriDate" />
+        </div>
+        <div id="divGreg_@modelId" class="px-2 py-2">
+            <input type="text" id="txtGreg_@modelId" name="txtGreg_@modelId" value="@val" class="form-control calText inputReq" placeholder="@Resource.GregorianDate" />
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+<script type="text/javascript">
+    //calenders
+    $(function () {
+        alert(120);
+        
+        $('#txt_@modelId').focus(function () {
+            $('#divGreg_@modelId .calendar').slideUp();
+            $('#divHijri_@modelId .calendar').slideDown();
+        });
+
+        $('#txtGreg_@modelId').focus(function () {
+            $('#divHijri_@modelId .calendar').slideUp();
+            $('#divGreg_@modelId .calendar').slideDown();
+        });
+
+        @*var val = $('@Html.HiddenFor(model => model)').val();
+        if (val != '') {
+            var day = '@Model.Value.Day';
+            var month = '@Model.Value.Month';
+            var year = '@Model.Value.Year';
+            $('#txt_@modelId').val(convertDate('gregorian', 'ummalqura', day, month, year));
+        }*@
+
+    });
+
+    loadHijriCal();
+    loadGregCal();
+
+    function loadHijriCal() {
+        window['txt_@modelId'] = new Calendar(true, 0, true, true);
+        calMode = window['txt_@modelId'].isHijriMode();
+        $('#txt_@modelId').closest('div').append(window['txt_@modelId'].getElement());
+
+        window['txt_@modelId'].callback = function () {
+
+            if (calMode !== window['txt_@modelId'].isHijriMode()) {
+                calMode = window['txt_@modelId'].isHijriMode();
+            }
+            else
+                window['txt_@modelId'].setTime(window['txt_@modelId'].getTime());
+
+            $('#txt_@modelId').val(window['txt_@modelId'].getDate().getDateString());
+            $('#@Html.IdFor(model => model)').val($('#txt_@modelId').val());
+
+            if (window['txt_@modelId'].isHijriMode()) {
+                var hDate = window['txt_@modelId'].getDate().getDateString();
+                var d = window['txt_@modelId'].getDate().getDate();//Day
+                var m = window['txt_@modelId'].getDate().getMonth() + 1;//Month
+                var y = window['txt_@modelId'].getDate().getFullYear();
+
+                try {
+                    var gregDate = convertDate('ummalqura', 'gregorian', d, m, y);
+                } catch (e) {
+                    AlertFun('@Resource.InvalidDate', 'danger');
+                    $('#@Html.IdFor(model => model)').val('');
+                    $('#txtGreg_@modelId').val('');
+                    $('#txt_@modelId').val('');
+                    return false;
+                }
+
+                $('#@Html.IdFor(model => model)').val(gregDate);
+                $('#txtGreg_@modelId').val(formateDate(gregDate));
+            }
+            else {
+                var gregDate = window['txt_@modelId'].getDate();
+
+                try {
+                    var hijriDate = convertDate('gregorian', 'ummalqura', gregDate.getDate(), gregDate.getMonth() + 1, gregDate.getFullYear());
+                } catch (e) {
+                    AlertFun('@Resource.InvalidDate', 'danger');
+                    $('#@Html.IdFor(model => model)').val('');
+                    $('#txtGreg_@modelId').val('');
+                    $('#txt_@modelId').val('');
+                    return false;
+                }
+
+                $('#txtGreg_@modelId').val(window['txt_@modelId'].getDate().getDateString());
+                $('#txt_@modelId').val(formateDate(hijriDate));
+
+                var tmpDate = gregDate.getFullYear() + '-' + (gregDate.getMonth() + 1) + '-' + gregDate.getDate();
+                $('#@Html.IdFor(model => model)').val(tmpDate);
+            }
+
+            $('#div_@modelId .calendar').hide();
+        };
+    }
+
+    function loadGregCal() {
+        window['txtGreg_@modelId'] = new Calendar(false, 0, true, true);
+        calMode = window['txtGreg_@modelId'].isHijriMode();
+        $('#txtGreg_@modelId').closest('div').append(window['txtGreg_@modelId'].getElement());
+
+        window['txtGreg_@modelId'].callback = function () {
+
+            if (calMode !== window['txtGreg_@modelId'].isHijriMode()) {
+                calMode = window['txtGreg_@modelId'].isHijriMode();
+            }
+            else
+                window['txtGreg_@modelId'].setTime(window['txtGreg_@modelId'].getTime());
+
+            $('#txtGreg_@modelId').val(window['txtGreg_@modelId'].getDate().getDateString());
+            $('#@Html.IdFor(model => model)').val($('#txtGreg_@modelId').val());
+
+            if (!window['txtGreg_@modelId'].isHijriMode()) {
+                var gregDate = window['txtGreg_@modelId'].getDate();
+                @*var d = window['txtGreg_@modelId'].getDate().getDate();//Day
+                var m = window['txtGreg_@modelId'].getDate().getMonth() + 1;//Month
+                var y = window['txtGreg_@modelId'].getDate().getFullYear();*@
+
+                try {
+                    var hijriDate = convertDate('gregorian', 'ummalqura', gregDate.getDate(), gregDate.getMonth() + 1, gregDate.getFullYear());
+                } catch (e) {
+                    AlertFun('@Resource.InvalidDate', 'danger');
+                    $('#@Html.IdFor(model => model)').val('');
+                    $('#txtGreg_@modelId').val('');
+                    $('#txt_@modelId').val('');
+                    return false;
+                }
+
+                $('#txt_@modelId').val(formateDate(hijriDate));
+
+                var tmpDate = gregDate.getFullYear() + '-' + (gregDate.getMonth() + 1) + '-' + gregDate.getDate();
+                $('#@Html.IdFor(model => model)').val(tmpDate);
+            }
+            else {
+                var gregDate = window['txtGreg_@modelId'].getDate();
+                var d = window['txtGreg_@modelId'].getDate().getDate();//Day
+                var m = window['txtGreg_@modelId'].getDate().getMonth() + 1;//Month
+                var y = window['txtGreg_@modelId'].getDate().getFullYear();
+
+                try {
+                    var gregDate = convertDate('ummalqura', 'gregorian', d, m, y);
+                } catch (e) {
+                    AlertFun('@Resource.InvalidDate', 'danger');
+                    $('#@Html.IdFor(model => model)').val('');
+                    $('#txtGreg_@modelId').val('');
+                    $('#txt_@modelId').val('');
+                    return false;
+                }
+
+                $('#@Html.IdFor(model => model)').val(gregDate);
+                $('#txtGreg_@modelId').val(formateDate(gregDate));
+                $('#txt_@modelId').val(window['txtGreg_@modelId'].getDate().getDateString());
+            }
+
+            $('#div_@modelId .calendar').hide();
+        };
+    }
+
+    function convertDate(dateFromName, dateToName, d, m, y) {
+        var jd = $.calendars.instance(dateFromName).newDate(y, m, d).toJD();
+
+        var date = $.calendars.instance(dateToName).fromJD(jd);
+
+        //$('#' + name + 'Year').val(date.formatYear());
+        //$('#' + name + 'Month').val(date.month());
+        //$('#' + name + 'Day').val(date.day());
+        //$('#' + name + 'WeekDay').val(date.calendar().local.dayNames[date.dayOfWeek()]);
+        //$('#' + name + 'YearDay').val('Day ' + date.dayOfYear());
+        //$('#' + name + 'Week').val('Week ' + date.weekOfYear());
+        //$('#' + name + 'LeapYear').val(date.leapYear() ? 'Leap year' : 'Common year');
+        return date;
+    }
+
+    function formateDate(date) {
+        return date.day() + '-' + date.month() + '-' + date.year();
+    }
+
+    function resetCalendar() {
+        $('.calText').val('');
+    }
+
+</script>
+}

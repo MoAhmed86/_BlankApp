@@ -1,0 +1,53 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Core.DTOs.Identity
+@using Core.Resources
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
+<link href="~/css/Theme/Templates/login.css" rel="stylesheet" />
+
+<nav id="navbarNav" class="navbar navbar-expand-md navbar-light md-light flex-row-reverse p-0">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse">
+        <button class="navbar-toggler m-20" type="button" data-toggle="collapse" data-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="true"
+                aria-label="Toggle navigation" style="z-index: 55555;background: #fff;">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="navbar-nav w-full">
+
+            <li class="nav-item ml-md-auto">
+                <a class="nav-link" href="@Url.Action("Index", "ContactUs")">@Resource.TechSupport</a>
+            </li>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <li class="nav-item dropdown slid-down-dropdown mr-md-auto">
+                    <a class="nav-link  dropdown-toggle" data-toggle="dropdown" asp-area="Identity" asp-page="/Account/Manage/Index" data-animation="scale-up" aria-expanded="false" role="button">
+                        @Resource.Welcome @user.FullName!
+                    </a>
+                    <div class="dropdown-menu " role="menu">
+                        <a class="nav-link btn btn-link my-0" href="@Url.Action("Details", "Account")">@Resource.PersonalInfo</a>
+                        <a class="nav-link btn btn-link my-0" href="@Url.Action("LogOut", "Account")">@Resource.Logout</a>
+                    </div>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item mr-md-auto">
+                    <a class="nav-link tetco-btn my-0" href="#">@Resource.Register</a>
+                </li>
+
+                <li class="nav-item mr-0">
+                    <a class="nav-link tetco-btn outline my-0" href="#">@Resource.Login</a>
+                </li>
+            }
+        </ul>
+    </div>
+</nav>

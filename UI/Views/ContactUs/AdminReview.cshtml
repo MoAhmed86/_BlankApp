@@ -1,0 +1,45 @@
+﻿@using Core.Resources
+@using Core.Enums
+@{
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+    ViewBag.Title = "AdminReview";
+}
+
+<div class="br-pagetitle">
+    <span><img src="/Content/img/svg/user.svg"></span>
+    <h4 class="default-color p-r-10">مراجعة التواصل </h4>
+</div>
+<div id="div_Reviews" style="padding-top:30px">
+
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        debugger;
+        loadTableData(0);
+    });
+
+    function loadTableData(pageIndex) {
+        showLoader();
+        $.ajax({
+            cache: false,
+            crossDomain: true,
+            url: '@Url.Action("Reviews", "ContactUs")',
+            data: { pageIndex: pageIndex },
+            type: "GET",
+            success: function (res) {
+                if (res != '') {
+                    $('#div_Reviews').html(res);
+                }
+
+                hideLoader();
+            },
+            error: function (error) {
+                //showErr("@Html.Raw(Resource.GenericError)");
+                hideLoader();
+            }
+        });
+    }
+
+</script>

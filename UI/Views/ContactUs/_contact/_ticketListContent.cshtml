@@ -1,0 +1,47 @@
+﻿@model IList<Core.DTOs.ServiceNow.TicketVM>
+@using Core.Resources
+
+@{
+    ViewBag.Title = "_ticketListContent";
+}
+
+<ul class="list-group list-group-flush px-4 pb-4 pt-2">
+    @foreach (var ticket in Model)
+    {
+    <li class="list-group-item new-ticket">
+        <div class="col-12 row m-0 p-0 hero-ticket">
+            <div class="col-12 col-md-4 col-lg-2 p-0">
+                <label class="p-1 ticket-no">#@ticket.TicketNumber</label>
+                <div class="tag-block px-2 status" style="background-color:@ticket.StateColor">@ticket.State</div>
+            </div>
+            <div class="col-12 col-md-8 col-lg-10 d-flex align-items-center">
+                <h5 class="title">
+                  @ticket.ShortDescription
+                </h5>
+            </div>
+        </div>
+        <hr class="col-12 p-0 m-0" />
+        <div class="col-12 row m-0 p-0 bottom-ticket">
+            @*<div class="col-1 status text-center pr-2" style="max-width:70px;line-height: 35px;">
+                <i class="fa fa-circle"></i>
+            </div>*@
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2">
+                <span>@Resource.By</span>
+                <label>@ticket.FullName</label>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2">
+                <span>@Resource.Date</span>
+                <label>@ticket.CreatedDateHijri</label>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2">
+                <span>@Resource.LastUpdate</span>
+                <label>@ticket.LastUpdatedDateHijri</label>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2">
+                <span></span>
+                <a class="mx-auto btn btn-sm btn-success" href="javascript:getTicket('@ticket.TicketNumber')">@Resource.Details</a>
+            </div>
+        </div>
+    </li>
+    }
+</ul>

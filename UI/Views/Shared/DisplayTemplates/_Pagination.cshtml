@@ -1,0 +1,101 @@
+﻿@model Core.DTOs.PagingModel
+@using Core.Resources
+
+@inject Microsoft.Extensions.Options.IOptions<Core.DTOs.Configuration> config
+
+@{
+    int pageSize = config.Value.PageSize;
+    int pagesCnt = 0;
+    string currentPage = "currentPage";
+}
+
+<style type="text/css">
+    .currentPage {
+        text-decoration: underline;
+        font-weight: bold;
+    }
+</style>
+@if (Model.PagesCount > 0)
+{
+    if (Model.CurrentPageInex >= 1)
+    {
+        if (Model.CurrentPageInex >= pageSize)
+        {
+            <a onclick="loadTableData('@(Model.CurrentPageInex - pageSize < 0 ? 0 : Model.CurrentPageInex - pageSize)'); return false;" href=""
+               class="btn btn-default">
+                &laquo;
+            </a>
+        }
+        else
+        {
+            <a class="btn btn-default">
+                &laquo;
+            </a>
+        }
+        <a onclick="loadTableData('@(Model.CurrentPageInex - 1)'); return false;" href=""
+           class="btn btn-default">
+            @Resource.Previous
+        </a>
+    }
+    else
+    {
+        <a class="btn btn-default" disabled style="visibility:hidden">
+            &laquo;
+        </a>
+        <a class="btn btn-default" disabled style="visibility:hidden">
+            @Resource.Previous
+        </a>
+    }
+    for (int i = ((Model.CurrentPageInex / pageSize) * pageSize) + 1; i <= Model.PagesCount + 1; i++)
+    {
+        if (pagesCnt == pageSize)
+        {
+            break;
+        }
+
+        if (Model.CurrentPageInex == i - 1)
+        {
+            currentPage = "currentPage";
+        }
+        else
+        {
+            currentPage = "";
+        }
+
+        <a onclick="loadTableData('@(i - 1)'); return false;" href=""
+           class="btn btn-default @currentPage">
+            @i
+        </a>
+        pagesCnt++;
+
+    }
+    if (Model.CurrentPageInex < Model.PagesCount)
+    {
+        <a onclick="loadTableData('@(Model.CurrentPageInex + 1)'); return false;" href=""
+           class="btn btn-default">
+            @Resource.Next
+        </a>
+        if (Model.CurrentPageInex < Model.PagesCount)
+        {
+            <a onclick="loadTableData('@((Model.PagesCount - Model.CurrentPageInex) < pageSize ? Model.PagesCount : Model.CurrentPageInex + pageSize)'); return false;" href=""
+               class="btn btn-default">
+                &raquo;
+            </a>
+        }
+        else
+        {
+            <a class="btn btn-default" disabled style="visibility:hidden">
+                &raquo;
+            </a>
+        }
+    }
+    else
+    {
+        <a class="btn btn-default" disabled style="visibility:hidden">
+            @Resource.Next
+        </a>
+        <a class="btn btn-default" disabled style="visibility:hidden">
+            &raquo;
+        </a>
+    }
+}

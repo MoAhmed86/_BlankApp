@@ -1,0 +1,17 @@
+﻿@using Core.Resources
+
+@{
+    ViewData["Title"] = $"{Resource.AppName} - 404";
+    Layout = "~/Views/Shared/Layouts/_header.cshtml";
+}
+<body>
+    <div class="card" style="  border: ridge; background-color: white;padding: 100px;margin: 100px 100px 0 100px;border-radius: 10px;">
+        <div class="col-12 text-center">
+            <h2 style="color:#02A29C;font-weight:normal;">@Resource.ContentNotFound - 404</h2>
+        </div>
+    </div>
+</body>
+
+@section styles{
+    <link href="~/css/Theme/Templates/home.css" rel="stylesheet" />
+}

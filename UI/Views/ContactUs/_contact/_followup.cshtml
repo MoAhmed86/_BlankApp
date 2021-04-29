@@ -1,0 +1,98 @@
+﻿@using Core.Resources
+
+<div class="alert alert-danger" role="alert" style="display:none">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+    <div id="followUp_errors"></div>
+</div>
+
+<div class="container pb-5">
+    <div class="d-flex align-items-center justify-content-center" id="div_FollowUpTicket">
+        <div class="login-wrapper wd-300 wd-xs-350 pd-20 pd-xs-40 bg-white rounded shadow-base">
+            <div id="div_Login" class="form-horizontal">
+                <div class="signin-logo tx-center tx-28 tx-bold tx-inverse mb-4">
+                    <h4 class="default-color">
+                        @Resource.InquireAboutTicket
+                    </h4>
+                </div>
+                @*<div class="form-group">
+                        <input type="text" class="form-control" id="FollowUpIdentityNumber" name="FollowUpIdentityNumber" placeholder="@Resource.IdentityNo" autocomplete="off">
+
+                    </div>*@<!-- form-group -->
+                <div class="form-group">
+                    <input type="text" class="form-control" id="FollowUpTicketNumber" name="FollowUpTicketNumber" placeholder="@Resource.TicketNo">
+
+                </div><!-- form-group -->
+
+                <div id="followUp_Recaptcha">
+                    <div class="g-recaptcha" data-sitekey="@ViewData["ReCaptchaKey"]"></div>
+                    @*@Html.Recaptcha(theme: Recaptcha.Web.RecaptchaTheme.Clean, language: "ar")*@
+                </div>
+                <div class="form-group text-center">
+                    <button id="btn_FindTicket" class="btn btn-sm btn-oblong btn-success float-l m-t-10">
+                        @Resource.Search<i class="fa fa-chevron-left mg-r-10"></i>
+                    </button>
+
+                </div>
+
+            </div><!-- login-wrapper -->
+        </div><!-- d-flex -->
+    </div>
+
+    <div id="div_ticket_Show">
+
+    </div>
+</div>
+<script type="text/javascript">
+    $("#loadingDiv").hide();
+    $(document).ready(function(){
+        $('#btn_FindTicket').click(function (e) {
+            e.preventDefault();
+            getTicket();
+        })
+    });
+    function getTicket() {
+        $('#followUp_errors').parent().slideUp();
+        
+        var ticketNumber = $('#FollowUpTicketNumber').val();
+        if (ticketNumber.trim() == '') {
+            $('#followUp_errors').html('@($"{Resource.TicketNumber} {Resource.Required}")');
+            $('#followUp_errors').parent().slideDown();
+            return;
+        }
+        if ($('#followUp_Recaptcha .g-recaptcha-response').val() == '') {
+            $('#followUp_errors').html('@($"{Resource.ClickOn} {Resource.IamNotARobot}")');
+            $('#followUp_errors').parent().slideDown();
+                return;
+        }
+        showLoader();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetTicket", "ContactUs")',
+            data: { ticketNumber: ticketNumber},
+            success: function (response) {
+                
+                if (response == null || response == '') {
+                    $('#followUp_errors').html('@Html.Raw(Resource.TicketNotExist)');
+                    $('#followUp_errors').parent().slideDown();
+                }
+                else {
+                    
+                    $('#div_ticket_Show').html(response);
+                    $('#div_FollowUpTicket').removeClass('d-flex align-items-center justify-content-center');
+                    $('#div_FollowUpTicket').slideUp();
+                    $('#div_ticket_Show').slideDown();
+                }
+                $(window).scrollTop(0);
+                hideLoader();
+            },
+            error: function (err) {
+                $('#followUp_errors').html('@Html.Raw(Resource.InternalErrorWhileLoading)');
+                $('#followUp_errors').parent().slideDown();
+                hideLoader();
+            }
+        })
+    }
+
+</script>

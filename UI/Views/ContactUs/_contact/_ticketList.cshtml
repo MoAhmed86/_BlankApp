@@ -1,0 +1,189 @@
+﻿@model Core.DTOs.ServiceNow.TicketVM
+@using Core.Resources
+
+<div class="alert alert-danger" role="alert" style="display:none">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+    <div id="ticketSearch_errors"></div>
+</div>
+<div id="ticketListpanel" class="ticket-list">
+
+
+
+    <div class="row m-0 col-12">
+            <h4 class="default-color col-12">@Resource.AllTickets</h4>
+            <hr class="col-12 p-0 m-0" />
+            <br />
+            <div class="col-12 text-left filter-section">
+                @*<a href="#" class="mx-2" data-toggle="collapse" data-target="#filterbox" aria-expanded="false">
+                    اضافة فلتر
+                    <i class="fa fa-filter"></i>
+                </a>*@
+
+                <a href="javascript:GetTicketsOrdered()" class="mx-2" id="orderLink">
+                    @Resource.Order - @Resource.Oldest
+                    <i class="fa fa-arrow-up"></i>
+                </a>
+
+            </div>
+
+            <div class="collapse col-12" id="filterbox">
+                <div class="card-body row m-0 p-15 mt-15">
+                    <div class="col-12 row m-0">
+                        @*<div class="form-group col-md-6 col-lg-4">
+                    <label class="form-control-label" for=""> العنوان</label>
+                    <select class="form-control"></select>
+                </div>*@
+                        <div class="form-group col-md-6 col-lg-4">
+                            <label class="form-control-label" for="">@Resource.TicketNo</label>
+                            <input type="text" class="form-control" id="TicketNumber" name="FollowUpTicketNumber" placeholder="@Resource.TicketNo">
+                        </div>
+                        @*<div class="form-group col-md-6 col-lg-4">
+                    <label class="form-control-label" for="">حالة البلاغ</label>
+                    <select class="form-control"></select>
+                </div>*@
+                        <div class="form-group col-md-6 col-lg-4">
+                            <label class="form-control-label" for="">@Resource.FromDate</label>
+                            @Html.EditorFor(model => model.FromDate, "_Calendar")
+                        </div>
+                        <div class="form-group col-md-6 col-lg-4">
+                            <label class="form-control-label" for="">@Resource.ToDate</label>
+                            @Html.EditorFor(model => model.ToDate, "_Calendar")
+                        </div>
+                        @*<div class="form-group col-md-6 col-lg-4">
+                    <label class="form-control-label" for="">تصنيف البلاغ </label>
+                    <select class="form-control"></select>
+                </div>*@
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <button id="btn_SearchTickets" class="btn btn-sm btn-oblong btn-success float-l m-t-10">
+                        @Resource.Search<i class="fa fa-chevron-left mg-r-10"></i>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+<div id="userTickets"></div>
+
+</div>
+<div id="div_ticket_Show">
+
+</div>
+<input id="orderType" name="orderType" type="hidden" value="asc"/>
+<script type="text/javascript">
+    function GetTicketsOrdered() {
+        var orderType = $('#orderType').val();      
+        SearchTickets(orderType);
+    };
+
+    $("#loadingDiv").hide();
+    $(document).ready(function () {
+        getUserTickets();
+    });
+    $('#btn_SearchTickets').click(function (e) {
+        e.preventDefault();
+        SearchTickets();
+    })
+    function SearchTickets(orderType) {
+        $('#ticketSearch_errors').parent().slideUp();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        if (fromDate != '' && toDate == '') {
+            $('#ticketSearch_errors').html('@($"{Resource.ToDate} {Resource.Required}")');
+            $('#ticketSearch_errors').parent().slideDown();
+            return;
+        }
+        if (fromDate == '' && toDate != '') {
+            $('#ticketSearch_errors').html('@($"{Resource.FromDate} {Resource.Required}")');
+            $('#ticketSearch_errors').parent().slideDown();
+            return;
+        }
+        getUserTickets(orderType);
+    }
+    function getUserTickets(orderType) {
+        
+        $('#ticketSearch_errors').parent().slideUp();
+        
+        var source = '@Model.Source'; 
+        var identityNumber = '@Model.IdentityNumber';
+        var ticketNumber = $('#TicketNumber').val();
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var orderType = $('#orderType').val();
+        //var data = JSON.stringify({
+        //    'Source': source,
+        //    'IdentityNumber': identityNumber,
+        //    'TicketNumber': ticketNumber,
+        //    'FromDate': fromDate,
+        //    'ToDate': toDate,
+        //    'OrderType': orderType
+        //});
+        
+        showLoader();
+
+        $.ajax({
+            cache: false,
+            crossDomain: true,
+            type: "POST",
+            url: '@Url.Action("GetUserTickets", "ContactUs")',
+            data: { Source: source, IdentityNumber: identityNumber, TicketNumber: ticketNumber, FromDate: fromDate, ToDate : toDate, OrderType : orderType },
+            //data: data,
+            success: function (response) {
+                $('#userTickets').html(response);
+                $(window).scrollTop(0);
+                hideLoader();
+            },
+            error: function (err) {
+                showErrors('@Html.Raw(Resource.InternalErrorWhileLoading)');
+                hideLoader();
+            }
+        });
+
+        if (orderType != '') {
+            ToggleOrderFields(orderType);
+        }
+    }
+    function ToggleOrderFields(orderType) {
+        if (orderType == 'asc') {
+            $("#orderLink").html('@Resource.Order - @Resource.Newest <i class="fa fa-arrow-up"></i>');
+            $('#orderType').val('desc');
+        }
+        else {
+            $("#orderLink").html('@Resource.Order - @Resource.Oldest <i class="fa fa-arrow-down"></i>');
+            $('#orderType').val('asc');
+        }
+    }
+
+    function getTicket(ticketNumber) {
+        if (ticketNumber == '') {
+            return;
+        }
+
+        showLoader();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetTicket", "ContactUs")',
+            data: { ticketNumber: ticketNumber},
+            success: function (response) {
+                
+                if (response == null) {
+                    showErrors('@Html.Raw(Resource.TicketNotExist)');
+                }
+                else {
+                    $('#div_ticket_Show').html(response);
+                    $('#ticketListpanel').slideUp();
+                    $('#div_ticket_Show').slideDown();
+                }
+                $(window).scrollTop(0);
+                hideLoader();
+            },
+            error: function (err) {
+                showErrors('@Html.Raw(Resource.InternalErrorWhileLoading)');
+                hideLoader();
+            }
+        })
+    }
+    
+</script>

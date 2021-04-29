@@ -1,0 +1,174 @@
+﻿@model Core.DTOs.ServiceNow.ContactUsVM
+@using Core.Resources
+@using static Core.Enums
+@*@using MVCEncrypt;*@
+@using Core;
+@{
+    ViewData["Title"] = $"{Resource.AppName} - {Resource.ContactUs}";
+    Layout = "~/Views/Shared/Layouts/_header.cshtml";
+}
+@*<link href="~/Content/css/contactUs.css" rel="stylesheet" />*@
+<link href="~/css/Theme/Templates/home.css" rel="stylesheet" />
+
+@*<h5 class="tx-xs-24 tx-normal tx-gray-900 mg-b-15">@Resource.ContactUs</h5>
+    <p class="tx-xs-16 tx-normal" dir="rtl">عند وجود أي مشكلة يمكن التواصل عبر الهاتف المجاني (920033988)</p>*@
+
+<div class="row m-0 w-full home-container details">
+
+    <div id="failedMessage">
+
+    </div>
+    <div class="container m-y-40 p-t-40" style="max-width:900px;margin:auto;">
+        <h5 class="form-title p-y-10 " style=" color:#02A29C;font-weight:normal;">تواصل معنا</h5>
+        <div class="w-full row m-0 form home-table ">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm", @class = "w-full row m-0" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="br-pagetitle w-full">
+                    <nav id="j-placeNav" class="j-placeNav clearfix" aria-label="Place">
+                        <div class="j-placeNavBg"></div>
+                        <ul id="j-placeMainNav" class="j-placeMainNav j-placeLinks nav nav-tabs" role="tablist">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="ticket-tab" data-toggle="tab" href="#ticket" role="tab" aria-controls="ticket" aria-selected="true">
+                                        <span class="lnk">تذكرة جديدة</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="ticketList-tab" data-toggle="tab" href="#ticketList" role="tab" aria-controls="ticketList" aria-selected="false">
+                                        <span class="lnk"> قائمة التذاكر</span>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="ticket-tab" data-toggle="tab" href="#ticket" role="tab" aria-controls="ticket" aria-selected="true">
+                                        <span class="lnk">تذكرة جديدة</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="followup-tab" data-toggle="tab" href="#followup" role="tab" aria-controls="followup" aria-selected="false">
+                                        <span class="lnk">متابعة تذكرة</span>
+                                    </a>
+                                </li>
+                            }
+
+                            @*<li class="nav-item">
+                                    <a class="nav-link" id="viewTicket-tab" data-toggle="tab" href="#viewTicket" role="tab" aria-controls="viewTicket" aria-selected="false">
+                                        <span class="lnk">عرض التذكرة</span>
+                                    </a>
+                                </li>*@
+
+
+                        </ul>
+                    </nav>
+                </div>
+                <div class="example-wrap container">
+
+                    <div class="my-5"></div>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade container show active" id="ticket" role="tabpanel" aria-labelledby="ticket-tab">
+                            @Html.Partial("~/Views/ContactUs/_contact/_ticket.cshtml", Model.TicketVM)
+                        </div>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <div class="tab-pane fade" id="ticketList" role="tabpanel" aria-labelledby="ticketList-tab">
+                                @Html.Partial("~/Views/ContactUs/_contact/_ticketList.cshtml", Model.TicketVM)
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="tab-pane fade" id="followup" role="tabpanel" aria-labelledby="followup-tab">
+                                @Html.Partial("~/Views/ContactUs/_contact/_followup.cshtml")
+                            </div>
+                        }
+
+                        @*<div class="tab-pane fade" id="viewTicket" role="tabpanel" aria-labelledby="viewTicket-tab">
+                                @Html.Partial("~/Views/ContactUs/_contact/_viewTicket.cshtml")
+                            </div>*@
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+    <script type="text/javascript">
+    $('#ticketList-tab').click(function () {
+        $('#ticketListpanel').slideDown();
+        $('#div_ticket_Show').slideUp();
+    })
+    function resetInputs() {
+        $('#@Html.IdFor(model => model.Email)').val('');
+        $('#@Html.IdFor(model => model.Subject)').val('');
+        $('#@Html.IdFor(model => model.Email)').css({ "border": "#ced4da 1px solid" });
+        $('#@Html.IdFor(model => model.Subject)').css({ "border": "#ced4da 1px solid" });
+    }
+
+        $('#btnSend').click(function () {
+            SendNow();
+            return false;
+        });
+
+    $('#btnBack').click(function () {
+        window.location.href = "@Url.Action("DiscoverYourself", "User")";
+        return false;
+    });
+
+    function SendNow() {
+
+            var model = $('#divForm select,input,textarea').serialize();
+
+        showLoader();
+        $.ajax({
+            cache: false,
+            crossDomain: true,
+            type: "POST",
+            url: '@Url.Action("Send", "ContactUs")',
+            data: model,
+            success: function (data) {
+                $('#txtRemaining').html('');
+
+                if (data.statusCode == '@((int)StatusCode.InvalidModel)') {
+                    if (data.ValidationErrors != '') {
+                        var html = '';
+                        for (var i = 0; i < data.ValidationErrors.length; i++) {
+                            {
+                                html += '<i class="fa fa-exclamation-triangle"></i> ' + data.ValidationErrors[i].errorMessage + '<br/>';
+                                $('#' + data.ValidationErrors[i].propertyName).css({ "border": "red 1px solid" });
+                            }
+                        }
+                        showErrors(html);
+                    }
+                }
+                else if (data.statusCode == '@((int)StatusCode.OK)') {
+                    html = '@Html.Raw(Resource.SendDone)';
+                    showSuccess(html);
+                    resetInputs();
+                }
+                else if (data.statusCode == '@((int)StatusCode.InternalError)') {
+                    showErrors('<i class="fa fa-exclamation-triangle"></i> @Html.Raw(Resource.User_InvalidCredentials)');
+                }
+                else if (data.statusCode == '@((int)StatusCode.SendFailed)') {
+                    showErrors('<i class="fa fa-exclamation-triangle"></i> @Html.Raw(Resource.SendMsgToEmailFailed)');
+                }
+                hideLoader();
+            },
+            error: function (err) {
+                hideLoader();
+
+            }
+        });
+    }
+
+    </script>
+
+    <script>
+        $('.txtStyle').keyup(function () {
+            $('#txtRemaining').html('عدد الأحرف المتبقية ' + (500 - $(this).val().length));
+        });
+    </script>
+

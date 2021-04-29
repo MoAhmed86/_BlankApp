@@ -1,0 +1,28 @@
+﻿@using Core.Resources
+
+@{
+    ViewData["Title"] = Resource.AppName;
+    Layout = "~/Views/Shared/Layouts/_DecoratedHeader.cshtml";
+    <!--
+    Layout = "~/Views/Shared/Layouts/_Layout_Details.cshtml"; -->
+}
+
+<div class="container home-container m-y-40" style="max-width:900px;padding-top:90px;">
+    <div class="w-full row m-0 form home-table">
+        <div class="section-inner d-flex align-items-center">
+            <div class="col-12 col-md-12">
+                <h3 class="m-b-20">
+                    صفحة التحكيم وإدارة النظام
+                </h3>
+                <p>
+                    يمكن من خلالها التحكم في خصائص النظام وإنشاء المسابقات والتعديل عليها وإضافة المحكمين ومعايير التحكيم واستعراض جميع المتقدمين وعمل الإجراءات حسب الصلاحيات الممنوحة لكل مستخدم.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section styles{
+    <link href="~/css/Theme/Templates/home.css" rel="stylesheet" />
+}

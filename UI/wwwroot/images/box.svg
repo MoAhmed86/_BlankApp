@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="362" height="395" viewBox="0 0 362 395">
+  <defs>
+    <filter id="Rectangle" x="-25" y="-25" width="422" height="455" filterUnits="userSpaceOnUse">
+      <feOffset dx="5" dy="5" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feFlood flood-opacity="0.051"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <clipPath id="clip-path">
+      <g transform="matrix(1, 0, 0, 1, 0, 0)" filter="url(#Rectangle)">
+        <rect id="Rectangle-2" data-name="Rectangle" width="362" height="395" rx="20" fill="#fff"/>
+      </g>
+    </clipPath>
+    <linearGradient id="linear-gradient" x1="0.027" y1="-0.116" x2="0.882" y2="0.125" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#762ac0"/>
+      <stop offset="1" stop-color="#1f546b"/>
+    </linearGradient>
+  </defs>
+  <g id="_01" data-name="01" clip-path="url(#clip-path)">
+    <rect id="Rectangle-3" data-name="Rectangle" width="101" height="151" rx="20" transform="translate(131 -57)" fill="url(#linear-gradient)"/>
+  </g>
+</svg>

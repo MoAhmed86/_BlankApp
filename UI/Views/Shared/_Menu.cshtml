@@ -1,0 +1,78 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Core.DTOs.Identity;
+@using Core.Resources;
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+
+    bool hasUserReadOnly = User.Claims.Any(a => a.Type == "UserReadOnly");
+    bool hasCreateUser = User.Claims.Any(a => a.Type == "CreateUser");
+
+    bool hasRoleReadOnly = User.Claims.Any(a => a.Type == "RoleReadOnly");
+}
+
+<nav id="navbarNav" class="navbar navbar-expand-md navbar-light md-light flex-row-reverse p-0">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse">
+        <button class="navbar-toggler m-20" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="true"
+                aria-label="Toggle navigation" style="z-index: 55555;background: #fff;">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="navbar-nav w-full">
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                if (hasCreateUser)
+                {
+                    <li class="nav-item text-center mr-md-0">
+                        <a class="nav-link btn btn-link my-0" href="@Url.Action("Create", "Account")">@Resource.CreateAccount</a>
+                    </li>
+                }
+
+                @if (hasUserReadOnly)
+                {
+                    <li class="nav-item text-center mr-md-0">
+                        <a class="nav-link btn btn-link my-0" href="@Url.Action("Users", "Account")">@Resource.Users</a>
+                    </li>
+                }
+
+                @if (hasRoleReadOnly)
+                {
+                    <li class="nav-item text-center mr-md-0">
+                        <a class="nav-link btn btn-link my-0" href="@Url.Action("Roles", "Account")">@Resource.Roles</a>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="nav-item text-center mr-md-0 mr-md-auto">
+                    <a class="nav-link tetco-btn btn-link my-0" href="@Url.Action("Login", "Account")">@Resource.Login</a>
+                </li>
+            }
+
+            <li class="nav-item text-center ml-md-0 mr-md-auto">
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                <li class="nav-item dropdown slid-down-dropdown">
+                    <a class="nav-link  dropdown-toggle" style="color:#58B083;" data-toggle="dropdown" asp-area="Identity" asp-page="/Account/Manage/Index" data-animation="scale-up" aria-expanded="false" role="button">
+                        @Resource.Welcome @user?.FullName!
+                    </a>
+                    <div class="dropdown-menu " role="menu">
+                        @if (hasUserReadOnly)
+                        {
+                            <a class="nav-link btn btn-link my-0" href="@Url.Action("Details", "Account")">@Resource.PersonalInfo</a>
+                        }
+                        <a class="nav-link btn btn-link my-0" href="@Url.Action("LogOut", "Account")">@Resource.Logout</a>
+                    </div>
+                </li>
+            }
+            </ul>
+        </div>
+    </nav>

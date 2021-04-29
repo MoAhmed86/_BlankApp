@@ -1,0 +1,8 @@
+{
+  "options": {
+    "LTR": true,
+    "TFS": false,
+    "LTRPATH": "LTR/",
+    "blacklist": { }
+  }
+}

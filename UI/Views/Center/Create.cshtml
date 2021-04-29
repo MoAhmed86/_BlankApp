@@ -1,0 +1,65 @@
+﻿@model Core.DTOs.CenterDto
+@using Core;
+@using Core.Resources;
+
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment hostingEnv
+
+@{
+    ViewData["Title"] = Resource.Center;
+    Layout = "~/Views/Shared/Layouts/_header.cshtml";
+    string autoComplete = hostingEnv.EnvironmentName == "Development" ? "on" : "off";
+
+    int i = 0;
+}
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src='https://www.google.com/recaptcha/api.js?hl=ar'></script>
+
+<div class="container home-container m-y-40" style="max-width:900px;margin:auto;">
+    <h5 class="form-title p-y-10" style="color:#02A29C;font-weight:normal;">@ViewData["Title"]</h5>
+    <div class="w-full row m-0 form home-table">
+
+        <form asp-controller="Center" asp-action="SaveAsync" method="post" role="form" autocomplete="@autoComplete" style="width:100%">
+            @Html.HiddenFor(model => model.Id)
+            @await Html.PartialAsync("_Notification")
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="row m-0">
+                <div class="form-group col-12">
+                    <label for="RoleName">@Resource.RoleName</label>
+                    @Html.TextBoxFor(model => model.RoleName, new { @class = "form-control", placeholder = Resource.RoleName })
+                    @Html.ValidationMessageFor(model => model.RoleName, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group col-12 col-lg-12">
+                    <label for="Input_Roles">@Resource.Claims</label>
+                    <div class="row">
+                        @foreach (var claim in claims)
+                        {
+                            <div class="form-group col-lg-4 col-md-6 col-12">
+                                @Html.CheckBoxFor(m => claims[i].IsSelected)
+                                @Html.HiddenFor(m => claims[i].ClaimType) &nbsp;
+                                @Html.HiddenFor(m => claims[i].ClaimValue) &nbsp;
+                                @Html.LabelFor(m => claims[i].IsSelected, claims[i].ClaimValue)
+                            </div>
+                            i = i + 1;
+                        }
+                    </div>
+                </div>
+                <div class="col-12 text-end pt-3">
+                    <button type="submit" class="tetco-btn outline">@Resource.Save</button>
+                </div>
+            </div>
+        </form>
+
+        @if (CreateRole)
+        {
+            <div>
+                <a asp-action="Roles">@Resource.ReturnTo @Resource.Roles</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section styles{
+    <link href="~/css/Theme/Templates/home.css" rel="stylesheet" />
+}

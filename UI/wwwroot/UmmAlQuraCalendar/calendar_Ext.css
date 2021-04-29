@@ -1,0 +1,42 @@
+﻿.icon-button {
+    width: 30px;
+}
+
+input {
+    margin-bottom: 8px;
+}
+
+.calendar * {
+    font-family: "Cairo" !important;
+}
+
+.calendar {
+    font-family: "Cairo" !important;
+    font-size: 12px;
+    width: 280px;
+    cursor: default;
+    background: #eef;
+    background: -webkit-linear-gradient(#eff,#fef,#ffe);
+    background: -moz-linear-gradient(#eff,#fef,#ffe);
+    background: -o-linear-gradient(#eff,#fef,#ffe);
+    background: linear-gradient(#eff,#fef,#ffe);
+    -moz-box-shadow: 0 4px 8px rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 4px 8px rgba(0,0,0,.5);
+    box-shadow: 0 4px 8px rgba(0,0,0,.5);
+    position: absolute;
+    right: 0;
+    top: 34px;
+    z-index: 3;
+}
+
+.UserItem, .InfoItem {
+    background: #00a65a;
+    padding: 5px;
+    color: #fff;
+    margin: 2px 0;
+    border-radius: 5px;
+}
+
+.InfoItem {
+    background: #00c0ef;
+}

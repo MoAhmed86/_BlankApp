@@ -1,0 +1,25 @@
+{
+  "options": {
+    "autoRename": true,
+    "autoRenameStrict": false,
+    "blacklist": {},
+    "clean": true,
+    "greedy": true,
+    "processUrls": true,
+    "stringMap": [
+      {
+        "name": "left-right",
+        "priority": 100,
+        "search": [ "../Content/" ],
+        "replace": [ "../../Content/" ],
+        "options": {
+          "scope": "*",
+          "ignoreCase": false
+        }
+      }
+    ]
+  },
+  "plugins": [],
+  "map": true
+}
+

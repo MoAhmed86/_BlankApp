@@ -1,0 +1,136 @@
+﻿@model Core.DTOs.RegisterDto
+@using Core;
+@using Core.Resources;
+
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment hostingEnv
+
+@{
+    ViewData["Title"] = Model.Id > 0 ? Resource.EditUser : Resource.Register;
+    Layout = "~/Views/Shared/Layouts/_header.cshtml";
+    string autoComplete = hostingEnv.EnvironmentName == "Development" ? "on" : "off";
+    string action = Model.Id.HasValue && Model.Id > 0 ? "Edit" : "Create";
+
+    bool UserReadOnly = User.Claims.Any(a => a.Type == "UserReadOnly");
+}
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src='https://www.google.com/recaptcha/api.js?hl=ar'></script>
+
+<div class="container home-container m-y-40" style="max-width:900px;margin:auto;">
+    <h5 class="form-title p-y-10" style=" color:#02A29C;font-weight:normal;">@ViewData["Title"]</h5>
+    <div class="w-full row m-0 form home-table">
+        <div class="alert alert-danger" role="alert" style="display:none">
+            <button type="button" class="close float-left" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            <div id="failedMessage_Register">
+
+            </div>
+        </div>
+
+        <form asp-controller="Account" asp-action="@action" method="post" id="FormRegister" role="form" autocomplete="@autoComplete" style="width:100%">
+            @Html.HiddenFor(model => model.Id)
+            <input type="hidden" id="role" name="role" value="@ViewBag.Role" />
+            @await Html.PartialAsync("_Notification")
+            @await Html.PartialAsync("_PasswordRules")
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row m-0">
+            <div class="form-group col-12 col-lg-6">
+                <label for="Input_Email">@Resource.FullName</label>
+                @Html.TextBoxFor(model => model.FullName, new { @class = "form-control", placeholder = Resource.FullName })
+                @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-12 col-lg-6">
+                <label for="Input_Email">@Resource.Email</label>
+                @Html.TextBoxFor(model => model.EmailAddress, new { @class = "form-control", placeholder = "example@example.com" })
+                @Html.ValidationMessageFor(model => model.EmailAddress, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-12 col-lg-6">
+                <label for="Input_Email">@Resource.MobileNumber</label>
+                @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", placeholder = "05xxxxxxxx", maxlength = 10 })
+                @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+            </div>
+
+            @if (ViewBag.Role == Core.CommonStaticFunctions.Role_Employee)
+            {
+                <div class="form-group col-12 col-lg-6">
+                    <label for="Input_IdentityNumber">@Resource.IdentityNumber</label>
+                    @Html.TextBoxFor(model => model.IdentityNumber, new { @class = "form-control", placeholder = "xxxxxxxxxx", maxlength = 10 })
+                    @Html.ValidationMessageFor(model => model.IdentityNumber, "", new { @class = "text-danger" })
+                </div>
+            }
+
+            <div class="form-group col-12 col-lg-6">
+                <label for="Input_IdentityNumber">@Resource.City</label>
+                @Html.TextBoxFor(model => model.City, new { @class = "form-control", placeholder = Resource.City, maxlength = 10 })
+                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group col-12 col-lg-6">
+                <label for="Input_IdentityNumber">@Resource.Address</label>
+                @Html.TextAreaFor(model => model.Address, new { @class = "form-control", placeholder = Resource.Address })
+                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group col-12 col-lg-6">
+                <label for="Input_Password">@Resource.Password</label>
+                @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "password", placeholder = "xxxxxxx" })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-12 col-lg-6">
+                <label for="Input_ConfirmPassword">@($"{Resource.Confirmation} {Resource.Password}")</label>
+                @Html.TextBoxFor(model => model.ConfirmPassword, new { @class = "form-control", @type = "password", placeholder = "xxxxxxx" })
+                @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group col-12 col-lg-6">
+                <label for="chIsTried" class="control-label">@Resource.Gender</label>
+                <br />
+                <div class="tetco-radio">
+                    @Html.RadioButtonFor(model => model.IsMale, true)
+                    <label for="rbIsTried_Yes">@Resource.Male</label>
+                </div>
+                <div class="tetco-radio">
+                    @Html.RadioButtonFor(model => model.IsMale, false)
+                    <label for="rbIsTried_No">@Resource.Female</label>
+                </div>
+            </div>
+
+            @if (ViewBag.Role == Core.CommonStaticFunctions.Role_Customer)
+            {
+                <div class="form-group col-12 col-lg-6">
+                    <label for="chIsTried" class="control-label">@Resource.IsSpecialNeeds</label>
+                    <br />
+                    <div class="tetco-radio">
+                        @Html.RadioButtonFor(model => model.IsSpecialNeeds, true)
+                        <label for="rbIsTried_Yes">@Resource.Yes</label>
+                    </div>
+                    <div class="tetco-radio">
+                        @Html.RadioButtonFor(model => model.IsSpecialNeeds, false)
+                        <label for="rbIsTried_No">@Resource.No</label>
+                    </div>
+                </div>
+            }
+
+            <div class="col-12">
+                <div class="g-recaptcha" data-sitekey="@ViewData["ReCaptchaKey"]"></div>
+            </div>
+            <div class="col-12 text-end pt-3">
+                <button type="submit" class="tetco-btn outline">@Resource.Register</button>
+            </div>
+        </div>
+        </form>
+
+        @if (UserReadOnly)
+        {
+            <div>
+                <a asp-action="Users">@Resource.ReturnTo @Resource.Users</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section styles{
+    <link href="~/css/Theme/Templates/home.css" rel="stylesheet" />
+}

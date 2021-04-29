@@ -1,0 +1,131 @@
+﻿@model Core.DTOs.PagedListModel<Core.DTOs.Identity.ApplicationUser>
+@using Core.Resources
+
+@{
+    bool UserReadOnly = User.Claims.Any(a => a.Type == "UserReadOnly");
+    bool EditUser = User.Claims.Any(a => a.Type == "EditUser");
+    bool DeleteUser = User.Claims.Any(a => a.Type == "DeleteUser");
+}
+
+<div class="w-full br-section-wrapper px-0 px-md-2">
+    <div class="br-pagetitle">
+        <table class="table table-striped">
+            <thead>
+                <tr style="color: #9D9D9D;">
+                    <th style="width:30%">
+                        @Resource.FullName
+                    </th>
+                    <th style="width:30%">
+                        @Resource.Email
+                    </th>
+                    <th style="width:15%">
+                        @Resource.RegistrationDate
+                    </th>
+                    <th style="width:10%">
+                        @Resource.Status @Resource.The@Resource.User
+                    </th>
+                    <th style="width:15%">
+                        @Resource.Roles
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.ListObj.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            @Resource.NoData
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.ListObj)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FullName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td>
+                                @item.CreationDate.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @(item.IsDeleted == true ? Resource.InActive : Resource.Active)
+                            </td>
+                            <td>
+                                @if (item.ApplicationUserRoles != null)
+                                {
+                                    if (!item.ApplicationUserRoles.Any())
+                                    {
+                                        <i>@Resource.NoData</i>
+                                    }
+                                    else
+                                    {
+                                        foreach (var userRole in item.ApplicationUserRoles)
+                                        {
+                                            <span>- @userRole.Role.Name</span>
+                                            <br />
+                                        }
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @if (EditUser)
+                                {
+                                    @Html.ActionLink("", "Edit", new { id = item.Id }, new { @class = " icon-table fa fa-edit" })
+                                }
+                            </td>
+                            <td>
+                                @if (UserReadOnly)
+                                {
+                                    @Html.ActionLink("", "Details", new { id = item.Id }, new { @class = " icon-table fas fa-eye" })
+                                }
+                            </td>
+                            <td>
+                                @if (DeleteUser)
+                                {
+                                    <form asp-action="DeleteUser" asp-controller="Account" method="post" class="d-inline">
+                                        <input type="hidden" id="id" name="id" value="@item.Id" />
+                                        <button type="submit" class="nav-link btn btn-link my-0 py-0 p-0 m-0 d-inline">
+                                            @{
+                                                if (item.IsDeleted == true)
+                                                {
+                                                    <i class="icon-table fa fa-check"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="icon-table fa fa-trash"></i>
+                                                }
+                                            }
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="13">
+                        <div style="text-align:center">
+                            <b>@Resource.ResultsCount : @(Model.PagingModel.ItemsCount)</b>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="10" align="center">
+                        @Html.DisplayFor(model => model.PagingModel, "_Pagination")
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>

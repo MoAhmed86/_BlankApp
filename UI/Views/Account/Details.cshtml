@@ -1,0 +1,91 @@
+﻿@model Core.DTOs.RegisterDto
+@using Core.Resources;
+
+@{
+    ViewData["Title"] = @Resource.PersonalInfo;
+
+    Layout = "~/Views/Shared/Layouts/_header.cshtml";
+
+    bool UserReadOnly = User.Claims.Any(a => a.Type == "UserReadOnly");
+    bool EditUser = User.Claims.Any(a => a.Type == "EditUser");
+}
+
+<div class="container home-container m-y-40" style="max-width:900px;margin:auto;">
+    <h5 class="form-title p-y-10" style="color:#02A29C;font-weight:normal;">@Resource.PersonalInfo</h5>
+    <div class="w-full row m-0 form home-table">
+
+        @await Html.PartialAsync("_Notification")
+        <div class="form-group col-12 col-lg-6">
+            <label class="control-label">@Resource.FullName</label>
+            <div>@Html.TextBoxFor(model => model.FullName, new { @class = "form-control", Disabled = true })</div>
+        </div>
+        <div class="form-group col-12 col-lg-6">
+            <label class="control-label">@($"{Resource.Email} ({Resource.UserName})")</label>
+            <div>@Html.TextBoxFor(model => model.EmailAddress, new { @class = "form-control", Disabled = true })</div>
+        </div>
+        <div class="form-group col-12 col-lg-6">
+            <label class="control-label">@Resource.MobileNumber</label>
+            <div>@Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", Disabled = true })</div>
+        </div>
+        <div class="form-group col-12 col-lg-6">
+            <label class="control-label">@Resource.IdentityNumber</label>
+            <div>@Html.TextBoxFor(model => model.IdentityNumber, new { @class = "form-control", Disabled = true })</div>
+        </div>
+        @if (Boolean.Parse(ViewBag.emp.ToString()))
+        {
+            <div class="form-group col-12 col-lg-6">
+                <label class="control-label">@Resource.City</label>
+                <div>@Html.TextBoxFor(model => model.City, new { @class = "form-control", Disabled = true })</div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group col-12 col-lg-12">
+                <label class="control-label">@Resource.Address</label>
+                <div>@Html.TextAreaFor(model => model.Address, new { @class = "form-control", Disabled = true })</div>
+            </div>
+        }
+
+        <div class="form-group col-12 col-lg-6">
+            <label for="chIsTried" class="control-label">@Resource.Gender</label>
+            <br />
+            <div class="tetco-radio">
+                @Html.RadioButtonFor(model => model.IsMale, true, new {  Disabled = true })
+                <label for="rbIsTried_Yes">@Resource.Male</label>
+            </div>
+            <div class="tetco-radio">
+                @Html.RadioButtonFor(model => model.IsMale, false, new {  Disabled = true })
+                <label for="rbIsTried_No">@Resource.Female</label>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-lg-6">
+            <label for="chIsTried" class="control-label">@Resource.IsSpecialNeeds</label>
+            <br />
+            <div class="tetco-radio">
+                @Html.RadioButtonFor(model => model.IsSpecialNeeds, true, new {  Disabled = true })
+                <label for="rbIsTried_Yes">@Resource.Yes</label>
+            </div>
+            <div class="tetco-radio">
+                @Html.RadioButtonFor(model => model.IsSpecialNeeds, false, new {  Disabled = true })
+                <label for="rbIsTried_No">@Resource.No</label>
+            </div>
+        </div>
+
+        <div>
+            @if (EditUser)
+            {
+                @Html.ActionLink(Resource.Edit, "Edit", new { id = Model.Id }) @:|
+            }
+            @if (UserReadOnly)
+            {
+                <a asp-action="Users">@Resource.ReturnTo @Resource.Users</a>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section styles{
+    <link href="~/css/Theme/Templates/home.css" rel="stylesheet" />
+}

@@ -1,0 +1,157 @@
+﻿@model Core.DTOs.ServiceNow.TicketRetrievalResponseDetails
+@using Core.Resources
+@using static Core.Enums
+<div class="alert alert-danger" role="alert" style="display:none">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+    <div id="addComment_errors"></div>
+</div>
+<div class="alert alert-success" role="alert" style="display:none">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+    <div id="ticketUpdate_success">
+
+    </div>
+</div>
+<div id="div_ticket_Show">
+    <input type="text" class="form-control" id="Sys_id" name="Sys_id" value="@Model.Sys_id" hidden="hidden">
+    <div class="col-12 row m-0">
+        <div class="form-group col-md-4">
+            <label class="form-control-label" for="">@Resource.TicketNo:</label>&nbsp;
+            <label id="ticketState">@Model.Number</label>
+        </div>
+        <div class="form-group col-md-4">
+            <label class="form-control-label" for="">@Resource.The@Resource.Ticket @Resource.Status:</label>&nbsp;
+            <label id="ticketState" style="background-color:@Model.StateColor">@Model.StateAr</label>
+        </div>
+        <div class="form-group col-md-4">
+            <label class="form-control-label" for="">@Resource.Date:</label>&nbsp;
+            <label id="ticketState">@Model.Created_On</label>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="form-group col-md-6">
+            <label class="form-control-label" for="inputBasicFirstName">@Resource.ServiceName</label>
+            <input type="text" class="form-control" id="ServiceName" name="ServiceName" value="@Resource.AppName" disabled>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="form-group col-md-6">
+            <label class="form-control-label" for="inputBasicFirstName">@Resource.TicketCategory</label>
+            <input type="text" class="form-control" id="Category" name="Category" value="@Model.Category" disabled>
+        </div>
+        <div class="form-group col-md-6">
+            <label class="form-control-label" for="inputBasicFirstName">@Resource.TicketSubCategory</label>
+            <input type="text" class="form-control" id="SubCategory" name="SubCategory" value="@Model.Subcategory" disabled>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="form-group col-md-12">
+            <label class="form-control-label" for="">@Resource.Address</label>
+            <input type="text" class="form-control" id="SubCategory" name="SubCategory" value="@Model.Short_Description" disabled>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="form-group col-md-12">
+            <label class="form-control-label" for="">@Resource.Desc</label>
+            <textarea type="text" class="form-control" id="ticketDescription" name="ticketDescription" disabled>@Model.Description</textarea>
+        </div>
+    </div>
+    <div class="col-12 row m-0">
+        <div class="form-group col-md-6">
+            <label class="form-control-label" for="">@Resource.By:</label>
+            <label id="createdBy">@Model.Customer_Name</label>
+        </div>
+        <div class="form-group col-md-6">
+            <label class="form-control-label" for="">@Resource.Date:</label>
+            <label id="createdDate">@Model.Created_On</label>
+        </div>
+    </div>
+    @*<div class="col-12">
+        <div class="form-group col-md-12">
+            <label class="form-control-label" for="">الدعم الفني</label>
+            <textarea type="text" class="form-control" id="TechnicalSupport" name="TechnicalSupport" disabled>@Model.Work_Notes</textarea>
+        </div>
+    </div>
+    <div class="col-12 row m-0">
+        <div class="form-group col-md-6">
+        </div>
+        <div class="form-group col-md-6">
+            <label class="form-control-label" for="">تاريخ التعليق:</label>
+            <label id="createdDate">@Model.Last_Updated</label>
+        </div>
+    </div>*@
+    <div class="col-12">
+        <div class="form-group col-md-12">
+            <label class="form-control-label" for="">@Resource.AddReply</label>
+            <textarea type="text" class="form-control" id="ticketComment" name="ticketComment"></textarea>
+        </div>
+    </div>
+
+    <div class="col-12 row m-0" >
+        <div class="col-4 text-center">          
+        </div>
+        <div class="col-4 text-center">
+            <button type="button" id="btn_AddComment" class="btn btn-outline-success my-3 px-5">@Resource.Send</button>
+            <button type="button" id="btn_CloseAddComment" class="btn btn-outline-success my-3 px-5">@Resource.Cancel</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btn_AddComment').click(function () {
+            AddCommentToTicket();
+        })
+        $('#btn_CloseAddComment').click(function () {
+            CloseAddComment();
+        })
+    });
+    function AddCommentToTicket() {
+        $('#addComment_errors').parent().slideUp();
+        var sysId = $('#Sys_id').val();
+        var ticketComment = $('#ticketComment').val();
+            if (ticketComment.trim() == '') {
+                $('#addComment_errors').html('@Html.Raw(Resource.RequiredDataNotInserted)');
+                $('#addComment_errors').parent().slideDown();
+                $(window).scrollTop(0);
+                return;
+        }
+        showLoader();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AddCommentToTicket", "ContactUs")',
+            dataType: 'json',
+            data: { sysId: sysId, comment: ticketComment },
+            success: function (response) {
+                
+                if (response.statusCode == '@((int)StatusCode.OK)') {                    
+                    $('#ticketUpdate_success').html(response.message);
+                    $('#ticketUpdate_success').parent().slideDown(); 
+                    //showSuccess(response.message);
+                }
+                else if (response.statusCode == '@((int)StatusCode.SaveFailed)') {
+                    $('#addComment_errors').html(response.message);
+                    $('#addComment_errors').parent().slideDown();
+                }
+                $(window).scrollTop(0);
+                hideLoader();
+            },
+            error: function () {
+                $('#addComment_errors').html('@Html.Raw(Resource.InternalErrorWhileLoading)');
+                $('#addComment_errors').parent().slideDown();
+                hideLoader();
+            }
+        });
+    }
+    function CloseAddComment() {
+        
+        $('#div_FollowUpTicket').addClass('d-flex align-items-center justify-content-center');
+        $('#div_FollowUpTicket').slideDown();
+        $('#div_ticket_Show').slideUp();
+        $('#ticketListpanel').slideDown();
+        $('#div_ticket_Show').slideUp();
+    }
+</script>
+

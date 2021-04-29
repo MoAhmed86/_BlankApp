@@ -1,0 +1,18 @@
+﻿@using Core.Resources
+ 
+@{
+    Layout = "~/Views/Shared/_LayoutError.cshtml";
+}
+<body>
+    <div class="card" style="  border: ridge; background-color: white;padding: 100px;margin: 100px;border-radius: 14px;">
+        <div class="col-md-12">
+            <div class="tx-center py-5 px-5">
+                <img class="img-fluid wd-250" src="~/Content/img/svg/403.svg" />
+                <h2 style=" color:#02A29C;font-weight:normal;margin-bottom: 100px;padding-right: 240px;">403 - @Resource.NoAccess</h2>
+                <div class="mx-auto" style="  padding-right: 439px;">
+                    <a class="btn btn-sm btn-success" href="@Url.Action("Index","Home")">@Resource.MainPage</a>
+                </div>
+            </div>
+        </div>
+        </div>
+</body>
